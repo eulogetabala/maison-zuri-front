@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowUpRight, Plus } from 'lucide-react';
 import { useCart } from '@/store/useCart';
 import { formatPrice } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 
 import { useApolloClient } from '@apollo/client/react';
 import { GET_PRODUCT } from '@/graphql/queries';
@@ -18,7 +18,7 @@ interface Product {
   category: string;
 }
 
-const variants = {
+const variants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: { 
     opacity: 1, 
