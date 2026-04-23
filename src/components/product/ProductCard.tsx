@@ -78,7 +78,7 @@ export default function ProductCard({ product }: { product: Product }) {
         <button 
           onClick={(e) => {
             e.preventDefault();
-            addItem({ ...product, quantity: 1 });
+            addItem(product as any);
           }}
           className="absolute bottom-4 right-4 w-10 h-10 bg-white shadow-xl rounded-full flex items-center justify-center translate-y-12 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500 hover:bg-luxury-gold hover:text-white"
         >

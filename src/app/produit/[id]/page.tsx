@@ -132,7 +132,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
             <div className="flex flex-col gap-6 mb-16">
               <button 
-                onClick={() => addItem({ ...product, quantity: 1 })}
+                onClick={() => addItem(product as any)}
                 className="w-full bg-luxury-black text-white py-6 text-[10px] uppercase tracking-[0.5em] font-bold hover:bg-luxury-gold transition-all duration-500 flex items-center justify-center gap-4 shadow-xl active:scale-[0.98]"
               >
                 <ShoppingBag className="w-4 h-4" />
