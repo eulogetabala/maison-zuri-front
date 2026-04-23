@@ -32,14 +32,9 @@ const variants: Variants = {
 
 import { useEffect, useState } from 'react';
 
-export default function ProductCard({ product }: { product: Product }) {
+export default function ProductCard({ product, priority = false }: { product: Product, priority?: boolean }) {
   const { addItem } = useCart();
-  const [hasMounted, setHasMounted] = useState(false);
   const client = useApolloClient();
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
 
   const prefetchProduct = () => {
     client.query({
@@ -47,10 +42,6 @@ export default function ProductCard({ product }: { product: Product }) {
       variables: { id: product.id },
     }).catch(() => {}); // Silent catch for prefetch
   };
-
-  if (!hasMounted) return (
-    <div className="flex flex-col h-full opacity-0 animate-pulse bg-luxury-gray aspect-[3/4]" />
-  );
 
   return (
     <motion.div 
@@ -70,6 +61,8 @@ export default function ProductCard({ product }: { product: Product }) {
                 src={product.image} 
                 alt={product.name} 
                 fill 
+                unoptimized
+                priority={priority}
                 className="object-cover transition-all duration-1000 grayscale-[10%] group-hover:grayscale-0"
               />
             ) : (

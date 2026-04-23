@@ -25,6 +25,23 @@ export const GET_CATEGORIES = gql`
   }
 `;
 
+export const GET_HOME_DATA = gql`
+  query GetHomeData {
+    products {
+      id
+      name
+      price
+      category
+      image
+    }
+    categories {
+      id
+      name
+      image
+    }
+  }
+`;
+
 export const GET_PRODUCT = gql`
   query GetProduct($id: ID!) {
     product(id: $id) {

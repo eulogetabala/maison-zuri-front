@@ -5,25 +5,21 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@apollo/client/react';
-import { GET_PRODUCTS, GET_CATEGORIES } from '@/graphql/queries';
+import { GET_HOME_DATA } from '@/graphql/queries';
 import ProductCard from '@/components/product/ProductCard';
 import { Star, ShieldCheck, Heart, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface ProductsData {
+interface HomeData {
   products: any[];
-}
-
-interface CategoriesData {
   categories: any[];
 }
 
 export default function Home() {
-  const { data: productsData, loading: productsLoading } = useQuery<ProductsData>(GET_PRODUCTS);
-  const { data: categoriesData, loading: categoriesLoading } = useQuery<CategoriesData>(GET_CATEGORIES);
+  const { data, loading } = useQuery<HomeData>(GET_HOME_DATA);
 
-  const products = productsData?.products || [];
-  const categories = categoriesData?.categories || [];
+  const products = data?.products || [];
+  const categories = data?.categories || [];
   
   const featuredProducts = products.slice(0, 8);
   const aboutRef = useRef(null);
@@ -38,21 +34,21 @@ export default function Home() {
   const heroSlides = [
     {
       image: '/29.png',
-      subtitle: "L'élégance dans chaque détail",
+      subtitle: "L'élégance au quotidien",
       title: "Maison Zuri",
-      description: "Chez Maison Zuri, l'élégance se porte au bras. Découvrez une collection de maroquinerie d'exception, conçue pour celles et ceux qui cultivent le goût du détail et du cuir de qualité."
+      description: "La beauté se porte au quotidien, dans les détails qui font toute la différence. Des sacs et des bijoux pensés pour sublimer votre style, avec élégance et caractère."
     },
     {
       image: '/24.jpg',
-      subtitle: "Nouveautés 2026",
-      title: "Essence Brute",
-      description: "Laissez-vous séduire par des teintes profondes et des matières nobles. L'alliance parfaite entre le savoir-faire artisanal et l'audace contemporaine."
+      subtitle: "Nouvelle Collection",
+      title: "Distinction",
+      description: "Chaque pièce est pensée pour apporter une touche de distinction, sans en faire trop, mais toujours avec justesse."
     },
     {
       image: '/12.jpg',
-      subtitle: "Pièces Signatures",
-      title: "Savoir-Faire",
-      description: "Chaque sac est une œuvre unique, façonnée à la main. Une déclaration de style luxueux qui traverse délicatement les saisons et les générations."
+      subtitle: "Accessoires d'Exception",
+      title: "Caractère",
+      description: "Sélectionnés pour leur qualité et leur authenticité, nos accessoires affirment votre personnalité avec finesse."
     }
   ];
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -92,6 +88,7 @@ export default function Home() {
                 fill
                 priority={currentSlide === 0}
                 className="object-cover"
+                unoptimized
               />
             </motion.div>
             
@@ -187,7 +184,7 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* SECTION CATEGORIES (MOVED UP) */}
+      {/* SECTION CATEGORIES (Nos Univers) */}
       <section className="py-24 md:py-32 bg-white px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div 
@@ -202,46 +199,53 @@ export default function Home() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {categories.slice(0, 6).map((category, i) => (
-              <motion.div 
-                key={category.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: i * 0.1 }}
-                viewport={{ once: true }}
-                className="group relative h-[400px] overflow-hidden cursor-pointer shadow-lg"
-              >
-                <Link href={`/produits?category=${category.id}`}>
-                  <Image 
-                    src={category.image} 
-                    alt={category.name} 
-                    fill 
-                    className="object-cover transition-transform duration-[2000ms] group-hover:scale-110"
-                  />
-                  <div className={cn(
-                    "absolute inset-0 transition-colors duration-500",
-                    category.id === 'hot' ? "bg-red-500/10 group-hover:bg-red-500/20" : "bg-black/20 group-hover:bg-black/40"
-                  )} />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-8">
-                    <h3 className={cn(
-                      "text-2xl md:text-3xl font-serif mb-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 uppercase tracking-widest text-center",
-                      category.id === 'hot' && "text-red-500 font-black",
-                      category.id === 'soldes' && "text-red-600 font-bold"
-                    )}>
-                      {category.name}
-                    </h3>
-                    <p className="text-[10px] uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 transition-opacity duration-500 font-bold border-b border-white pb-2">
-                      Explorer
-                    </p>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+            {loading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="h-[400px] bg-gray-200 animate-pulse rounded-sm" />
+              ))
+            ) : (
+              categories.slice(0, 6).map((category, i) => (
+                <motion.div 
+                  key={category.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: i * 0.1 }}
+                  viewport={{ once: true }}
+                  className="group relative h-[400px] overflow-hidden cursor-pointer shadow-lg"
+                >
+                  <Link href={`/produits?category=${category.id}`}>
+                    <Image 
+                      src={category.image} 
+                      alt={category.name} 
+                      fill 
+                      unoptimized
+                      className="object-cover transition-transform duration-[2000ms] group-hover:scale-110"
+                    />
+                    <div className={cn(
+                      "absolute inset-0 transition-colors duration-500",
+                      category.id === 'hot' ? "bg-red-500/10 group-hover:bg-red-500/20" : "bg-black/20 group-hover:bg-black/40"
+                    )} />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-8">
+                      <h3 className={cn(
+                        "text-2xl md:text-3xl font-serif mb-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 uppercase tracking-widest text-center",
+                        category.id === 'hot' && "text-red-500 font-black",
+                        category.id === 'soldes' && "text-red-600 font-bold"
+                      )}>
+                        {category.name}
+                      </h3>
+                      <p className="text-[10px] uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 transition-opacity duration-500 font-bold border-b border-white pb-2">
+                        Explorer
+                      </p>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))
+            )}
           </div>
         </div>
       </section>
 
-      {/* SECTION PRODUITS (MOVED UP) */}
+      {/* SECTION PRODUITS (Pièces de Signature) */}
       <section className="py-24 md:py-32 bg-luxury-gray px-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
@@ -251,8 +255,8 @@ export default function Home() {
               transition={{ duration: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-5xl font-serif text-luxury-black mb-4">Pièces de Signature</h2>
-              <p className="text-sm text-luxury-black/60 uppercase tracking-[0.2em]">L&apos;excellence du cuir, le raffinement du design</p>
+              <h2 className="text-3xl md:text-5xl font-serif text-luxury-black mb-4">Des pièces pensées pour vous</h2>
+              <p className="text-sm text-luxury-black/60 uppercase tracking-[0.2em]">Sacs et bijoux qui s&apos;adaptent à votre quotidien</p>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, x: 30 }}
@@ -278,9 +282,24 @@ export default function Home() {
             }}
             className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12"
           >
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {loading ? (
+              // Skeletons pendant le chargement
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex flex-col gap-4">
+                  <div className="aspect-[3/4] bg-gray-200 animate-pulse rounded-sm" />
+                  <div className="h-4 w-2/3 bg-gray-100 animate-pulse" />
+                  <div className="h-4 w-1/3 bg-gray-50 animate-pulse" />
+                </div>
+              ))
+            ) : (
+              featuredProducts.map((product, i) => (
+                <ProductCard 
+                  key={product.id} 
+                  product={product} 
+                  priority={i < 4}
+                />
+              ))
+            )}
           </motion.div>
 
           <motion.div 
@@ -294,13 +313,13 @@ export default function Home() {
               href="/produits" 
               className="bg-luxury-black text-white px-12 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-luxury-gold transition-all duration-500 shadow-xl"
             >
-              Voir plus
+              Voir toute la collection
             </Link>
           </motion.div>
         </div>
       </section>
 
-      {/* SECTION À PROPOS (REPOSITIONED) */}
+      {/* SECTION À PROPOS */}
       <section ref={aboutRef} className="py-32 md:py-48 px-6 bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
           <motion.div 
@@ -315,6 +334,7 @@ export default function Home() {
                 src="/14.jpg" 
                 alt="L'univers Maison Zuri" 
                 fill 
+                unoptimized
                 className="object-cover"
               />
             </motion.div>
@@ -327,38 +347,45 @@ export default function Home() {
             viewport={{ once: true }}
           >
             <span className="text-luxury-gold text-[10px] uppercase tracking-[0.4em] font-bold mb-6 block">L&apos;univers Maison Zuri</span>
-            <h2 className="text-4xl md:text-6xl font-serif text-luxury-black mb-8 leading-tight">L&apos;excellence du cuir sans compromis</h2>
+            <h2 className="text-4xl md:text-6xl font-serif text-luxury-black mb-8 leading-tight">Élégance, Qualité et Authenticité</h2>
             <div className="space-y-6 text-luxury-black/70 text-lg leading-relaxed font-light">
               <p>
-                Maison Zuri est une maison de maroquinerie née d’un désir simple : proposer des sacs et accessoires en cuir qui allient élégance, qualité et authenticité.
+                Maison Zuri est une marque née d’un désir simple : proposer des accessoires qui allient élégance, qualité et authenticité.
               </p>
               <p>
-                Chaque création est pensée pour accompagner chaque moment de votre vie, apportant une touche de distinction juste à votre silhouette.
+                Nous sélectionnons des sacs et des bijoux conçus pour accompagner chaque moment de votre vie, du quotidien aux occasions les plus importantes. Chaque pièce est pensée pour apporter une touche de distinction, sans en faire trop, mais toujours avec justesse.
               </p>
             </div>
-            <div className="mt-12 flex flex-col gap-6">
-              {[
-                { icon: <Star className="w-5 h-5 text-luxury-gold" />, label: "Qualité des matériaux" },
-                { icon: <ShieldCheck className="w-5 h-5 text-luxury-gold" />, label: "Finesse des finitions" },
-                { icon: <Heart className="w-5 h-5 text-luxury-gold" />, label: "Harmonie des designs" }
-              ].map((val, i) => (
-                <div key={i} className="flex items-center gap-4 text-luxury-black/60 text-xs uppercase tracking-widest font-bold">
-                  {val.icon}
-                  {val.label}
-                </div>
-              ))}
+            
+            <div className="mt-12 pt-12 border-t border-luxury-gray">
+              <span className="text-luxury-gold text-[10px] uppercase tracking-[0.4em] font-bold mb-6 block">Notre Vision</span>
+              <p className="text-luxury-black/80 text-xl font-serif italic mb-8">
+                &quot;Chez Maison Zuri, nous croyons que les accessoires ne sont pas de simples objets. Ils sont une manière de s’exprimer, d’affirmer son style et de révéler sa personnalité.&quot;
+              </p>
+              <div className="flex flex-col gap-4">
+                {[
+                  { icon: <Star className="w-5 h-5 text-luxury-gold" />, label: "Qualité des matériaux" },
+                  { icon: <ShieldCheck className="w-5 h-5 text-luxury-gold" />, label: "Finesse des finitions" },
+                  { icon: <Heart className="w-5 h-5 text-luxury-gold" />, label: "Harmonie des designs" }
+                ].map((val, i) => (
+                  <div key={i} className="flex items-center gap-4 text-luxury-black/60 text-[10px] uppercase tracking-widest font-bold">
+                    {val.icon}
+                    {val.label}
+                  </div>
+                ))}
+              </div>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* SECTION ENGAGEMENT (SIMPLIFIED & COMBINED) */}
+      {/* SECTION ENGAGEMENT */}
       <section className="py-24 md:py-32 bg-luxury-black text-white px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-16">
           <div className="md:w-1/2">
             <h2 className="text-4xl md:text-6xl font-serif mb-8">Notre engagement</h2>
             <p className="text-lg text-white/60 font-light mb-12">
-              Nous nous engageons à vous proposer des produits élégants, durables, accessibles et soigneusement sélectionnés.
+              Nous nous engageons à vous proposer des produits élégants, durables, accessibles et soigneusement sélectionnés. Porque vous méritez des accessoires qui vous ressemblent et qui traversent le temps.
             </p>
             <div className="grid grid-cols-2 gap-8">
               {['Élégant', 'Durable', 'Accessible', 'Sélectif'].map((item, i) => (
@@ -370,15 +397,15 @@ export default function Home() {
             </div>
           </div>
           <div className="md:w-1/3 text-center border-l border-white/10 pl-12 hidden md:block">
-            <span className="text-[10px] uppercase tracking-[0.5em] opacity-40 block mb-6">Signature</span>
+            <span className="text-[10px] uppercase tracking-[0.5em] opacity-40 block mb-6">Maison Zuri — Signature</span>
             <p className="text-2xl font-serif leading-relaxed italic">
-              &quot;Parce que vous méritez des accessoires qui vous ressemblent et qui traversent le temps.&quot;
+              &quot;L’élégance dans chaque détail.&quot;
             </p>
           </div>
         </div>
       </section>
 
-      {/* SECTION SIGNATURE */}
+      {/* SECTION SIGNATURE FINALE */}
       <section className="py-48 px-6 bg-white text-center overflow-hidden">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
@@ -389,13 +416,13 @@ export default function Home() {
         >
           <div className="w-12 h-px bg-luxury-gold mx-auto mb-16" />
           <h2 className="text-4xl md:text-7xl font-serif text-luxury-black italic mb-16 leading-tight">
-            &quot;Maison Zuri — L’élégance dans chaque détail.&quot;
+            &quot;S’exprimer, s’affirmer, se révéler.&quot;
           </h2>
           <Link 
             href="/produits" 
-            className="inline-block text-[10px] uppercase tracking-[0.6em] text-white bg-luxury-black px-12 py-6 hover:bg-luxury-gold transition-colors duration-500 font-bold"
+            className="inline-block text-[10px] uppercase tracking-[0.6em] text-white bg-luxury-black px-12 py-6 hover:bg-luxury-gold transition-colors duration-500 font-bold shadow-2xl"
           >
-            Rejoindre l&apos;Univers
+            Découvrir l&apos;élégance
           </Link>
         </motion.div>
       </section>
