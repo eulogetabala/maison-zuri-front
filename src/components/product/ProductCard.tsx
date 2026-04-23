@@ -65,12 +65,18 @@ export default function ProductCard({ product }: { product: Product }) {
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
             className="w-full h-full"
           >
-            <Image 
-              src={product.image} 
-              alt={product.name} 
-              fill 
-              className="object-cover transition-all duration-1000 grayscale-[10%] group-hover:grayscale-0"
-            />
+            {product.image ? (
+              <Image 
+                src={product.image} 
+                alt={product.name} 
+                fill 
+                className="object-cover transition-all duration-1000 grayscale-[10%] group-hover:grayscale-0"
+              />
+            ) : (
+              <div className="w-full h-full bg-luxury-gray flex items-center justify-center text-luxury-black/20 text-[8px] uppercase">
+                Aucune image
+              </div>
+            )}
           </motion.div>
         </Link>
         
