@@ -10,6 +10,8 @@ export const GET_PRODUCTS = gql`
       category
       image
       gallery
+      video
+      discountPrice
     }
   }
 `;
@@ -33,6 +35,8 @@ export const GET_HOME_DATA = gql`
       price
       category
       image
+      video
+      discountPrice
     }
     categories {
       id
@@ -52,6 +56,16 @@ export const GET_PRODUCT = gql`
       category
       image
       gallery
+      video
+      discountPrice
+    }
+    products {
+      id
+      name
+      price
+      category
+      image
+      discountPrice
     }
   }
 `;
@@ -66,16 +80,8 @@ export const GET_PRODUCTS_BY_CATEGORY = gql`
       category
       image
       gallery
-    }
-  }
-`;
-
-export const CREATE_ORDER = gql`
-  mutation CreateOrder($input: OrderInput!) {
-    createOrder(input: $input) {
-      id
-      status
-      createdAt
+      video
+      discountPrice
     }
   }
 `;

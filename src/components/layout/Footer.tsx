@@ -53,7 +53,7 @@ export default function Footer() {
 
         {/* Boutique Navigation */}
         <div className="flex flex-col gap-8">
-          <h3 className="text-[10px] uppercase tracking-[0.4em] font-bold text-luxury-gold">La Boutique</h3>
+          <h3 className="text-[10px] uppercase tracking-[0.4em] font-bold text-luxury-gold">Sacs</h3>
           <ul className="flex flex-col gap-4 text-sm text-white/70 font-medium">
             <li><Link href="/produits" className="hover:text-luxury-gold transition-colors">Tout Explorer</Link></li>
             {categories.slice(0, 3).map(cat => (

@@ -2,9 +2,10 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowUpRight, Plus } from 'lucide-react';
+import { ArrowUpRight, Plus, Heart } from 'lucide-react';
 import { useCart } from '@/store/useCart';
-import { formatPrice } from '@/lib/utils';
+import { useFavorites } from '@/store/useFavorites';
+import { formatPrice, cn } from '@/lib/utils';
 import { motion, Variants } from 'framer-motion';
 
 import { useApolloClient } from '@apollo/client/react';
@@ -16,6 +17,7 @@ interface Product {
   price: number;
   image: string;
   category: string;
+  discountPrice?: number;
 }
 
 const variants: Variants = {
@@ -34,7 +36,16 @@ import { useEffect, useState } from 'react';
 
 export default function ProductCard({ product, priority = false }: { product: Product, priority?: boolean }) {
   const { addItem } = useCart();
+  const { toggleFavorite, isFavorite } = useFavorites();
   const client = useApolloClient();
+  
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  const isFav = hasMounted ? isFavorite(product.id) : false;
 
   const prefetchProduct = () => {
     client.query({
@@ -73,16 +84,37 @@ export default function ProductCard({ product, priority = false }: { product: Pr
           </motion.div>
         </Link>
         
+        {/* Sale Badge */}
+        {product.discountPrice && product.discountPrice > 0 && (
+          <div className="absolute top-4 left-4 bg-red-600 text-white text-[8px] uppercase tracking-widest font-bold px-3 py-1.5 shadow-lg z-10">
+            Promotion
+          </div>
+        )}
+        
         {/* Quick Add Button - Floating Style */}
-        <button 
-          onClick={(e) => {
-            e.preventDefault();
-            addItem(product as any);
-          }}
-          className="absolute bottom-4 right-4 w-10 h-10 bg-white shadow-xl rounded-full flex items-center justify-center translate-y-12 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500 hover:bg-luxury-gold hover:text-white"
-        >
-          <Plus className="w-5 h-5" />
-        </button>
+        <div className="absolute bottom-4 right-4 flex flex-col gap-2 translate-y-12 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              toggleFavorite(product as any);
+            }}
+            className={cn(
+              "w-10 h-10 bg-white shadow-xl rounded-full flex items-center justify-center transition-all duration-300 hover:bg-luxury-gold hover:text-white",
+              isFav ? "text-red-500" : "text-luxury-black"
+            )}
+          >
+            <Heart className={cn("w-5 h-5", isFav && "fill-current")} />
+          </button>
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              addItem(product as any);
+            }}
+            className="w-10 h-10 bg-white shadow-xl rounded-full flex items-center justify-center transition-all duration-300 hover:bg-luxury-gold hover:text-white"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col flex-grow px-2">
@@ -103,10 +135,21 @@ export default function ProductCard({ product, priority = false }: { product: Pr
           </Link>
         </div>
         
-        <div className="mt-auto border-t border-gray-50 pt-3">
-          <p className="text-sm font-bold text-luxury-black tracking-tight tabular-nums">
-            {formatPrice(product.price)}
-          </p>
+        <div className="mt-auto border-t border-gray-50 pt-3 flex items-center gap-3">
+          {product.discountPrice && product.discountPrice > 0 ? (
+            <>
+              <p className="text-sm font-bold text-red-600 tracking-tight tabular-nums">
+                {formatPrice(product.discountPrice)}
+              </p>
+              <p className="text-xs text-luxury-black/30 line-through tracking-tight tabular-nums">
+                {formatPrice(product.price)}
+              </p>
+            </>
+          ) : (
+            <p className="text-sm font-bold text-luxury-black tracking-tight tabular-nums">
+              {formatPrice(product.price)}
+            </p>
+          )}
         </div>
       </div>
     </motion.div>

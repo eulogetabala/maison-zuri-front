@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { ShoppingBag, Menu, X, Search, User, ChevronDown } from 'lucide-react';
+import { ShoppingBag, Menu, X, Search, User, ChevronDown, Heart } from 'lucide-react';
+import { useFavorites } from '@/store/useFavorites';
 import { useCart } from '@/store/useCart';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -25,6 +26,7 @@ export default function Navbar() {
   const [hasMounted, setHasMounted] = useState(false);
 
   const { getTotalItems } = useCart();
+  const { items: favoriteItems } = useFavorites();
   const pathname = usePathname();
   const isHome = pathname === '/';
 
@@ -57,7 +59,7 @@ export default function Navbar() {
               className="flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] font-bold hover:text-luxury-gold transition-colors py-2"
               onMouseEnter={() => setIsCollectionsOpen(true)}
             >
-              Boutique <ChevronDown className="w-3 h-3" />
+              Sacs <ChevronDown className="w-3 h-3" />
             </button>
             <AnimatePresence>
               {isCollectionsOpen && (
@@ -127,6 +129,14 @@ export default function Navbar() {
             <button className="hover:text-luxury-gold transition-colors p-1">
               <Search className="w-5 h-5 stroke-[1.5]" />
             </button>
+            <Link href="/favoris" className="relative p-1 hover:text-luxury-gold transition-colors group">
+              <Heart className="w-5 h-5 stroke-[1.5]" />
+              {hasMounted && favoriteItems.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-luxury-gold text-luxury-black text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
+                  {favoriteItems.length}
+                </span>
+              )}
+            </Link>
             <Link href="/panier" className="relative p-1 hover:text-luxury-gold transition-colors group">
               <ShoppingBag className="w-5 h-5 stroke-[1.5]" />
               {hasMounted && getTotalItems() > 0 && (
@@ -140,6 +150,14 @@ export default function Navbar() {
 
         {/* Mobile Toggle */}
         <div className="lg:hidden flex items-center gap-4">
+          <Link href="/favoris" className="relative p-1">
+            <Heart className="w-6 h-6" />
+            {favoriteItems.length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-luxury-gold text-luxury-black text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
+                {favoriteItems.length}
+              </span>
+            )}
+          </Link>
           <Link href="/panier" className="relative p-1">
             <ShoppingBag className="w-6 h-6" />
             {getTotalItems() > 0 && (
@@ -187,7 +205,7 @@ export default function Navbar() {
               
               <div className="flex flex-col gap-8">
                 <div className="space-y-4">
-                  <div className="text-[10px] uppercase tracking-widest text-luxury-gold font-bold mb-4">Boutique</div>
+                  <div className="text-[10px] uppercase tracking-widest text-luxury-gold font-bold mb-4">Sacs</div>
                   <Link 
                     href="/produits"
                     onClick={() => setIsMobileMenuOpen(false)}
