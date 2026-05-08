@@ -213,7 +213,7 @@ export default function Home() {
                   viewport={{ once: true }}
                   className="group relative h-[400px] overflow-hidden cursor-pointer shadow-lg"
                 >
-                  <Link href={`/produits?category=${category.id}`}>
+                  <Link href={`/produits?category=${category.id}`} className="relative block w-full h-full">
                     <Image 
                       src={category.image} 
                       alt={category.name} 

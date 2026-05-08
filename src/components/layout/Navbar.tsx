@@ -152,7 +152,7 @@ export default function Navbar() {
         <div className="lg:hidden flex items-center gap-4">
           <Link href="/favoris" className="relative p-1">
             <Heart className="w-6 h-6" />
-            {favoriteItems.length > 0 && (
+            {hasMounted && favoriteItems.length > 0 && (
               <span className="absolute -top-1 -right-1 bg-luxury-gold text-luxury-black text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
                 {favoriteItems.length}
               </span>
@@ -160,7 +160,7 @@ export default function Navbar() {
           </Link>
           <Link href="/panier" className="relative p-1">
             <ShoppingBag className="w-6 h-6" />
-            {getTotalItems() > 0 && (
+            {hasMounted && getTotalItems() > 0 && (
               <span className="absolute -top-1 -right-1 bg-luxury-gold text-luxury-black text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
                 {getTotalItems()}
               </span>
